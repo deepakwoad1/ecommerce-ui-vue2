@@ -2,6 +2,7 @@ import Vue from "vue";
 import App from "./App.vue";
 import router from "./router";
 import { initKeycloak } from "./keycloak";
+import "@/plugins/vee-validate";
 
 import { BootstrapVue, IconsPlugin } from "bootstrap-vue";
 

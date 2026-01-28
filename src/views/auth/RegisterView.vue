@@ -1,88 +1,116 @@
 <template>
     <div class="register-wrapper">
-        <b-form @submit.prevent="onSubmit" @reset.prevent="onReset">
+        <ValidationObserver ref="observer" v-slot="{ handleSubmit }">
+            <b-form @submit.prevent="handleSubmit(onSubmit)" @reset.prevent="onReset">
 
-            <!-- Row 1: First Name + Last Name -->
-            <b-row>
-                <b-col md="6">
-                    <b-form-group label="First Name:" label-for="firstName" class="input-14">
-                        <b-form-input id="firstName" v-model="form.firstName" placeholder="Enter first name" required />
+                <!-- Row 1: First Name + Last Name -->
+                <b-row>
+                    <b-col md="6">
+                        <ValidationProvider name="First Name" rules="required|alpha_spaces|min:2|max:50"
+                            v-slot="{ errors, failed, passed }">
+                            <b-form-group label="First Name:" class="input-14">
+                                <b-form-input v-model="form.firstName" placeholder="Enter first name"
+                                    :state="failed ? false : passed ? true : null" />
+                                <small v-if="failed" class="text-danger">{{ errors[0] }}</small>
+                            </b-form-group>
+                        </ValidationProvider>
+                    </b-col>
+
+                    <b-col md="6">
+                        <ValidationProvider name="Last Name" rules="required|alpha_spaces|min:2|max:50"
+                            v-slot="{ errors, failed, passed }">
+                            <b-form-group label="Last Name:" class="input-14">
+                                <b-form-input v-model="form.lastName" placeholder="Enter last name"
+                                    :state="failed ? false : passed ? true : null" />
+                                <small v-if="failed" class="text-danger">{{ errors[0] }}</small>
+                            </b-form-group>
+                        </ValidationProvider>
+                    </b-col>
+                </b-row>
+
+                <!-- Row 2: Username + Phone -->
+                <b-row>
+                    <b-col md="6">
+                        <ValidationProvider name="Username" rules="required|username"
+                            v-slot="{ errors, failed, passed }">
+                            <b-form-group label="Username:" class="input-14">
+                                <b-form-input v-model="form.userName" placeholder="Enter username"
+                                    :state="failed ? false : passed ? true : null" />
+                                <small v-if="failed" class="text-danger">{{ errors[0] }}</small>
+                            </b-form-group>
+                        </ValidationProvider>
+                    </b-col>
+
+                    <b-col md="6">
+                        <ValidationProvider name="Phone Number" rules="required|phone"
+                            v-slot="{ errors, failed, passed }">
+                            <b-form-group label="Phone Number:" class="input-14">
+                                <b-form-input v-model="form.phone" type="tel" maxlength="10"
+                                    placeholder="Enter phone number" :state="failed ? false : passed ? true : null" />
+                                <small v-if="failed" class="text-danger">{{ errors[0] }}</small>
+                            </b-form-group>
+                        </ValidationProvider>
+                    </b-col>
+                </b-row>
+
+                <!-- Email -->
+                <ValidationProvider name="Email" rules="required|email|max:100" v-slot="{ errors, failed, passed }">
+                    <b-form-group label="Email address:" class="input-14">
+                        <b-form-input v-model="form.email" type="email" placeholder="Enter email address"
+                            :state="failed ? false : passed ? true : null" />
+                        <small v-if="failed" class="text-danger">{{ errors[0] }}</small>
                     </b-form-group>
-                </b-col>
+                </ValidationProvider>
 
-                <b-col md="6">
-                    <b-form-group label="Last Name:" label-for="lastName" class="input-14">
-                        <b-form-input id="lastName" v-model="form.lastName" placeholder="Enter last name" required />
-                    </b-form-group>
-                </b-col>
-            </b-row>
+                <!-- Password -->
+                <b-row>
+                    <b-col md="6">
+                        <ValidationProvider name="Password" rules="required|strong_password" vid="password"
+                            v-slot="{ errors, failed, passed }">
+                            <b-form-group label="Password:" class="input-14">
+                                <b-form-input v-model="form.password" type="password" placeholder="Enter password"
+                                    :state="failed ? false : passed ? true : null" />
+                                <small v-if="failed" class="text-danger">{{ errors[0] }}</small>
+                            </b-form-group>
+                        </ValidationProvider>
+                    </b-col>
 
-            <!-- Row 2: Username + Phone -->
-            <b-row>
-                <b-col md="6">
-                    <b-form-group label="Username:" label-for="username" class="input-14">
-                        <b-form-input id="username" v-model="form.userName" placeholder="Enter username" required />
-                    </b-form-group>
-                </b-col>
+                    <b-col md="6">
+                        <ValidationProvider name="Confirm Password" rules="required|confirmed:password"
+                            v-slot="{ errors, failed, passed }">
+                            <b-form-group label="Confirm Password:" class="input-14">
+                                <b-form-input v-model="form.confirmPassword" type="password"
+                                    placeholder="Confirm password" :state="failed ? false : passed ? true : null" />
+                                <small v-if="failed" class="text-danger">{{ errors[0] }}</small>
+                            </b-form-group>
+                        </ValidationProvider>
+                    </b-col>
+                </b-row>
 
-                <b-col md="6">
-                    <b-form-group label="Phone Number:" label-for="phone" class="input-14">
-                        <b-form-input id="phone" v-model="form.phone" type="tel" maxlength="10"
-                            placeholder="Enter phone number" required />
-                    </b-form-group>
-                </b-col>
-            </b-row>
+                <!-- Buttons -->
+                <div class="d-flex justify-content-center mt-4">
+                    <b-button type="submit" variant="primary" class="mr-2">
+                        Register
+                    </b-button>
+                    <b-button type="reset" variant="danger">
+                        Reset
+                    </b-button>
+                </div>
 
-            <!-- Row 3: Email (FULL WIDTH) -->
-            <b-row>
-                <b-col md="12">
-                    <b-form-group label="Email address:" label-for="email" class="input-14">
-                        <b-form-input id="email" v-model="form.email" type="email" placeholder="Enter email address"
-                            required />
-                    </b-form-group>
-                </b-col>
-            </b-row>
-
-            <!-- Row 4: Password + Confirm Password -->
-            <b-row>
-                <b-col md="6">
-                    <b-form-group label="Password:" label-for="password" class="input-14">
-                        <b-form-input id="password" v-model="form.password" type="password" placeholder="Enter password"
-                            minlength="6" required />
-                    </b-form-group>
-                </b-col>
-
-                <b-col md="6">
-                    <b-form-group label="Confirm Password:" label-for="confirmPassword" class="input-14">
-                        <b-form-input id="confirmPassword" v-model="form.confirmPassword" type="password"
-                            placeholder="Confirm password" minlength="6" required />
-                    </b-form-group>
-                </b-col>
-            </b-row>
-
-            <!-- Buttons -->
-            <div class="d-flex justify-content-center mt-4">
-                <b-button type="submit" variant="primary" class="mr-2">
-                    Register
-                </b-button>
-                <b-button type="reset" variant="danger">
-                    Reset
-                </b-button>
-            </div>
-
-            <!-- Login Link -->
-            <div class="text-center mt-3">
-                <small>
-                    Already have an account?
-                    <a href="#" class="font-weight-bold" @click.prevent="login">
-                        Login here
-                    </a>
-                </small>
-            </div>
-
-        </b-form>
+                <!-- Login Link -->
+                <div class="text-center mt-3">
+                    <small>
+                        Already have an account?
+                        <a href="#" class="font-weight-bold" @click.prevent="login">
+                            Login here
+                        </a>
+                    </small>
+                </div>
+            </b-form>
+        </ValidationObserver>
     </div>
 </template>
+
 
 <style scoped>
 /* Increase form width and center it */
@@ -115,7 +143,7 @@ input::-moz-placeholder {
 
 <script>
 import api from "@/services/api";
-import keycloak from '@/keycloak';
+import keycloak from "@/keycloak";
 
 const initialFormState = {
     userName: "",
@@ -124,24 +152,18 @@ const initialFormState = {
     email: "",
     phone: "",
     password: "",
-    confirmPassword: ""
-}
+    confirmPassword: "",
+};
 
 export default {
     name: "RegisterView",
     data() {
         return {
-            form: initialFormState
+            form: { ...initialFormState },
         };
     },
     methods: {
         async onSubmit() {
-            if (this.form.password !== this.form.confirmPassword) {
-                alert("Passwords do not match");
-                return;
-            }
-
-            // payload mapping
             const payload = {
                 username: this.form.userName,
                 firstName: this.form.firstName,
@@ -152,32 +174,38 @@ export default {
             };
 
             try {
-                console.log("Register payload:", payload);
-
-                // 🔓 Call register API (NO TOKEN)
+                console.log(payload);
                 await api.post("/api/auth/register-new", payload);
 
                 alert("Registration successful! Please login.");
+                this.onReset();
 
-                // 🔐 Redirect to Keycloak login
+                // Redirect to Keycloak login
                 // keycloak.login({
                 //     redirectUri: window.location.origin,
                 // });
-                this.onReset();
 
             } catch (error) {
-                console.error("Registration failed:", error.response?.data || error);
                 alert(error.response?.data?.message || "Registration failed");
             }
         },
+
         onReset() {
-            this.form = initialFormState
+            this.form = { ...initialFormState };
+
+            // ✅ Reset vee-validate state
+            this.$nextTick(() => {
+                if (this.$refs.observer) {
+                    this.$refs.observer.reset();
+                }
+            });
         },
+
         login() {
             keycloak.login({
-                redirectUri: window.location.origin, // or protected route
+                redirectUri: window.location.origin,
             });
-        }
-    }
+        },
+    },
 };
 </script>
