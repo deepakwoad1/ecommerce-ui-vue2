@@ -89,9 +89,11 @@
 
                 <!-- Buttons -->
                 <div class="d-flex justify-content-center mt-4">
-                    <b-button type="submit" variant="primary" class="mr-2">
+                    <b-button type="submit" variant="primary" :disabled="registering" class="mr-2">
+                        <b-spinner v-if="registering" small class="mr-2" />
                         Register
                     </b-button>
+
                     <b-button type="reset" variant="danger">
                         Reset
                     </b-button>
@@ -118,7 +120,7 @@
     max-width: 850px;
     /* increase width */
     margin: 0 auto;
-    padding: 20px;
+    padding: 10px 0;
 }
 
 /* Reduce placeholder font size */
@@ -142,8 +144,6 @@ input::-moz-placeholder {
 </style>
 
 <script>
-import api from "@/services/api";
-import keycloak from "@/keycloak";
 
 const initialFormState = {
     userName: "",
@@ -156,11 +156,16 @@ const initialFormState = {
 };
 
 export default {
-    name: "RegisterView",
+    name: "RegisterPage",
     data() {
         return {
             form: { ...initialFormState },
         };
+    },
+    computed: {
+        registering() {
+            return this.$store.state.auth.registering;
+        },
     },
     methods: {
         async onSubmit() {
@@ -175,18 +180,31 @@ export default {
 
             try {
                 console.log(payload);
-                await api.post("/api/auth/register-new", payload);
+                // await this.$store.dispatch("auth/register", payload);
 
-                alert("Registration successful! Please login.");
+                this.$bvToast.toast(
+                    "Registration successful! Please login.",
+                    {
+                        variant: "success",
+                        solid: true,
+                        toaster: "b-toaster-top-right",
+                        autoHideDelay: 3000,
+                    }
+                );
                 this.onReset();
 
                 // Redirect to Keycloak login
-                // keycloak.login({
-                //     redirectUri: window.location.origin,
-                // });
+                // this.login();
 
             } catch (error) {
-                alert(error.response?.data?.message || "Registration failed");
+                this.$bvToast.toast(
+                    error?.response?.data?.message || "Registration failed",
+                    {
+                        variant: "danger",
+                        solid: true,
+                        toaster: "b-toaster-top-right",
+                    }
+                );
             }
         },
 
@@ -195,16 +213,12 @@ export default {
 
             // ✅ Reset vee-validate state
             this.$nextTick(() => {
-                if (this.$refs.observer) {
-                    this.$refs.observer.reset();
-                }
+                this.$refs.observer?.reset();
             });
         },
 
         login() {
-            keycloak.login({
-                redirectUri: window.location.origin,
-            });
+            this.$store.dispatch("auth/login");
         },
     },
 };

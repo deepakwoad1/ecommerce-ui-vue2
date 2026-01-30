@@ -39,9 +39,10 @@ export default {
 </template>
 
 <script>
-import { login } from '@/keycloak';
+import { login } from '@/plugins/keycloak';
 
 export default {
+    name: "LoginPage",
     methods: {
         login() {
             login();

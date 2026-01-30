@@ -1,9 +1,9 @@
 import Keycloak from "keycloak-js";
 
 const keycloak = new Keycloak({
-  url: "http://localhost:8080",
-  realm: "ecommerce-realm",
-  clientId: "ecommerce-ui",
+  url: process.env.VUE_APP_KEYCLOAK_URL,
+  realm: process.env.VUE_APP_KEYCLOAK_REALM,
+  clientId: process.env.VUE_APP_KEYCLOAK_CLIENT_ID,
 });
 
 export const initKeycloak = (onAuthenticated) => {
