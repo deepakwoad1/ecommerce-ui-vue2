@@ -25,7 +25,7 @@
                 </div>
 
                 <div class="text-right">
-                    <h4 class="total-amount mb-2">₹ {{ total }}</h4>
+                    <h4 class="total-amount mb-2">$ {{ total }}</h4>
                     <b-button variant="primary" @click="checkout">
                         Proceed to Checkout →
                     </b-button>

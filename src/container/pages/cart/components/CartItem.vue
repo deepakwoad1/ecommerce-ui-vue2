@@ -5,7 +5,7 @@
       <div class="item-info">
         <h6 class="mb-1">{{ item.name }}</h6>
         <small class="text-muted">
-          ₹ {{ item.price }} × {{ item.quantity }}
+          $ {{ item.price }} × {{ item.quantity }}
         </small>
       </div>
 
@@ -26,7 +26,7 @@
 
         <!-- Price -->
         <strong class="item-total ml-4">
-          ₹ {{ item.price * item.quantity }}
+          $ {{ item.price * item.quantity }}
         </strong>
 
         <!-- Remove -->
