@@ -1,3 +1,5 @@
+import { createOrder } from "@/services/order.service";
+
 const CART_KEY = "ecommerce_cart";
 
 const state = {
@@ -69,6 +71,17 @@ const actions = {
 
   clearCart({ commit }) {
     commit("CLEAR_CART");
+  },
+
+  async checkout({ state, commit }, { shipping, paymentMethod }) {
+    const order = await createOrder(
+      state.items,
+      shipping,
+      paymentMethod,
+    );
+
+    commit("CLEAR_CART");
+    return order;
   },
 };
 

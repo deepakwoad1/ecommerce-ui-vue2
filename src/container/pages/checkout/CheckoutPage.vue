@@ -1,78 +1,30 @@
 <template>
-    <div>
-        <h3 class="mb-4">Checkout</h3>
+    <div class="checkout-page">
+        <CheckoutHeader />
 
         <b-row>
-            <!-- LEFT: Shipping Form -->
             <b-col md="8">
-                <b-card title="Shipping Details">
-                    <b-form @submit.prevent="placeOrder">
-                        <b-form-group label="Full Name">
-                            <b-form-input v-model="form.name" required />
-                        </b-form-group>
-
-                        <b-form-group label="Phone Number">
-                            <b-form-input v-model="form.phone" required />
-                        </b-form-group>
-
-                        <b-form-group label="Address">
-                            <b-form-textarea v-model="form.address" rows="3" required />
-                        </b-form-group>
-
-                        <b-form-group label="Pincode">
-                            <b-form-input v-model="form.pincode" required />
-                        </b-form-group>
-
-                        <b-form-group label="Payment Method">
-                            <b-form-radio-group v-model="form.paymentMethod">
-                                <b-form-radio value="COD">Cash on Delivery</b-form-radio>
-                                <b-form-radio value="ONLINE" disabled>
-                                    Online (Coming Soon)
-                                </b-form-radio>
-                            </b-form-radio-group>
-                        </b-form-group>
-
-                        <b-button variant="primary" type="submit" :disabled="!canPlaceOrder">
-                            Place Order
-                        </b-button>
-                    </b-form>
-                </b-card>
+                <CheckoutForm ref="checkoutForm" :disabled="!cartItems.length" @submit="placeOrder" />
             </b-col>
 
-            <!-- RIGHT: Order Summary -->
             <b-col md="4">
-                <b-card title="Order Summary">
-                    <div v-for="item in cartItems" :key="item.productId" class="d-flex justify-content-between mb-2">
-                        <span>{{ item.name }} × {{ item.quantity }}</span>
-                        <strong>₹ {{ item.price * item.quantity }}</strong>
-                    </div>
-
-                    <hr />
-
-                    <div class="d-flex justify-content-between">
-                        <strong>Total</strong>
-                        <strong>₹ {{ cartTotal }}</strong>
-                    </div>
-                </b-card>
+                <OrderSummary :items="cartItems" :total="cartTotal" />
             </b-col>
         </b-row>
     </div>
 </template>
 
 <script>
+import CheckoutForm from "./components/CheckoutForm.vue";
+import OrderSummary from "./components/OrderSummary.vue";
+import CheckoutHeader from "./components/CheckoutHeader.vue";
+
 export default {
     name: "CheckoutPage",
-
-    data() {
-        return {
-            form: {
-                name: "",
-                phone: "",
-                address: "",
-                pincode: "",
-                paymentMethod: "COD",
-            },
-        };
+    components: {
+        CheckoutForm,
+        OrderSummary,
+        CheckoutHeader,
     },
 
     computed: {
@@ -82,50 +34,84 @@ export default {
         cartTotal() {
             return this.$store.getters["cart/cartTotal"];
         },
-        canPlaceOrder() {
-            return (
-                this.form.name &&
-                this.form.phone &&
-                this.form.address &&
-                this.form.pincode &&
-                this.cartItems.length
-            );
-        },
     },
+
     mounted() {
-        // ✅ Redirect if cart is empty
         if (!this.cartItems.length) {
             this.$router.push("/");
         }
     },
+
     methods: {
-        placeOrder() {
-            const payload = {
-                items: this.cartItems.map(item => ({
-                    productId: item.productId,
-                    quantity: item.quantity,
-                })),
-                shippingAddress: {
-                    name: this.form.name,
-                    phone: this.form.phone,
-                    address: this.form.address,
-                    pincode: this.form.pincode,
-                },
-                paymentMethod: this.form.paymentMethod,
-            };
+        async placeOrder(form) {
+            try {
+                await this.$store.dispatch("cart/checkout", form);
 
-            console.log("ORDER PAYLOAD:", payload);
+                this.$bvToast.toast("Order placed successfully!", {
+                    variant: "success",
+                    solid: true,
+                    toaster: "b-toaster-top-right",
+                });
 
-            this.$bvToast.toast("Order placed successfully!", {
-                variant: "success",
-                solid: true,
-                toaster: "b-toaster-top-right",
-            });
+                this.$refs.checkoutForm.onReset();
+            } catch (error) {
+                this.$bvToast.toast(
+                    error.message || "Order failed. Please try again.",
+                    {
+                        variant: "danger",
+                        solid: true,
+                        toaster: "b-toaster-top-right",
+                    }
+                );
+            }
+        }
 
-            this.$store.dispatch("cart/clearCart");
-            this.$router.push("/");
-        },
     },
 };
-
 </script>
+
+
+<style scoped>
+.checkout-page {
+    /* padding-top: 80px; */
+    max-width: 1100px;
+    margin: auto;
+}
+
+.page-title {
+    font-weight: 600;
+}
+
+.checkout-card {
+    border-radius: 10px;
+    background: #ffffff;
+}
+
+.card-title {
+    font-weight: 600;
+}
+
+/* Order summary */
+.summary-card {
+    background: #f9fafb;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+}
+
+.total-row {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+/* Mobile tweaks */
+@media (max-width: 768px) {
+    .checkout-page {
+        padding-top: 72px;
+    }
+}
+</style>

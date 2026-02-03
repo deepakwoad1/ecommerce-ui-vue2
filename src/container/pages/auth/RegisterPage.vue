@@ -180,7 +180,7 @@ export default {
 
             try {
                 console.log(payload);
-                // await this.$store.dispatch("auth/register", payload);
+                await this.$store.dispatch("auth/register", payload);
 
                 this.$bvToast.toast(
                     "Registration successful! Please login.",

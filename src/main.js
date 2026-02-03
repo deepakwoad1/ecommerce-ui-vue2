@@ -5,7 +5,7 @@ import store from "./store";
 
 import "@/plugins/bootstrap-vue";
 import "@/plugins/vee-validate";
-import "@/plugins/global-components"; 
+import "@/plugins/global-components";
 
 import { initKeycloak } from "./plugins/keycloak";
 
