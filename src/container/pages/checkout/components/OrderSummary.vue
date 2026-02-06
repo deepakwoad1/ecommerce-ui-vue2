@@ -4,14 +4,14 @@
 
         <div v-for="item in items" :key="item.productId" class="summary-item">
             <span>{{ item.name }} × {{ item.quantity }}</span>
-            <strong>₹ {{ item.price * item.quantity }}</strong>
+            <strong>$ {{ item.price * item.quantity }}</strong>
         </div>
 
         <hr />
 
         <div class="total-row">
             <span>Total</span>
-            <strong>₹ {{ total }}</strong>
+            <strong>$ {{ total }}</strong>
         </div>
     </b-card>
 </template>
